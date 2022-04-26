@@ -9,5 +9,30 @@ import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 })
 export class CreateCourseStep3Component {
 
+  form = this.fb.group({
+    lessons: this.fb.array([])
+  });
+
+  constructor(
+    private fb: FormBuilder,
+  ) {}
+
+  get lessonsGroup () {
+    return this.form.controls['lessons'] as FormArray;
+  }
+
+  addLesson() {
+    const lessonsForm = this.fb.group({
+      title: ['', Validators.required],
+      level: ['', Validators.required],
+    });
+
+    this.lessonsGroup.push(lessonsForm);
+  }
+
+  deleteLesson(lessonIndex: number) {
+    this.lessonsGroup.removeAt(lessonIndex);
+  }
+
 
 }

@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import {AbstractControl, FormBuilder, Validators} from "@angular/forms";
+import {createPasswordStrengthValidator} from "../validators/passwordStrength.validator";
 
 
 @Component({
@@ -6,16 +8,26 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './login-reactive.component.html',
   styleUrls: ['./login-reactive.component.css']
 })
-export class LoginReactiveComponent implements OnInit {
+export class LoginReactiveComponent {
+  form = this.fb.group({
+    email: ['',{
+      validators:  [Validators.required, Validators.email],
+      updateOn: 'blur'
+    }],
+    password: ['',[ Validators.required,Validators.minLength(8),createPasswordStrengthValidator()] ]
+  })
 
 
-  constructor() {
+  constructor(
+    private fb: FormBuilder,
+  ) {}
 
-
+  get email(): AbstractControl {
+    return this.form.controls['email'];
   }
 
-  ngOnInit() {
-
+  get password(): AbstractControl {
+    return this.form.controls['password'];
   }
 
 }

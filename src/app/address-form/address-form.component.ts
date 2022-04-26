@@ -13,22 +13,59 @@ import {noop, Subscription} from 'rxjs';
 @Component({
   selector: 'address-form',
   templateUrl: './address-form.component.html',
-  styleUrls: ['./address-form.component.scss']
+  styleUrls: ['./address-form.component.scss'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: AddressFormComponent,
+    },
+  ],
 })
-export class AddressFormComponent {
+export class AddressFormComponent implements ControlValueAccessor, OnDestroy{
 
-    @Input()
-    legend:string;
+  @Input()
+  legend:string;
 
-    form: FormGroup = this.fb.group({
-        addressLine1: [null, [Validators.required]],
-        addressLine2: [null, [Validators.required]],
-        zipCode: [null, [Validators.required]],
-        city: [null, [Validators.required]]
-    });
+  onTouched = () => {};
+  onChangeSub: Subscription;
 
-    constructor(private fb: FormBuilder) {
+  form: FormGroup = this.fb.group({
+      addressLine1: [null, [Validators.required]],
+      addressLine2: [null, [Validators.required]],
+      zipCode: [null, [Validators.required]],
+      city: [null, [Validators.required]]
+  });
+
+  constructor(private fb: FormBuilder) {}
+
+  writeValue(value: any) {
+    if(value) {
+      this.form.setValue(value);
     }
+  }
+
+  registerOnTouched(onTouched: any) {
+    this.onTouched = onTouched;
+  }
+
+  registerOnChange(onChange: any) {
+    this.onChangeSub = this.form.valueChanges.subscribe(val => {
+      onChange(val);
+    })
+  }
+
+  setDisabledState(isDisabled: boolean) {
+    if(isDisabled) {
+      this.form.disable()
+    } else {
+      this.form.enable();
+    }
+  }
+
+  ngOnDestroy() {
+    this.onChangeSub.unsubscribe();
+  }
 
 }
 
